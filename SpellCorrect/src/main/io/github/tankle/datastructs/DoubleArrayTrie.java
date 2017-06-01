@@ -1,12 +1,12 @@
 /**
  * DoubleArrayTrie: Java implementation of Darts (Double-ARray Trie System)
- *
+ * <p>
  * <p>
  * Copyright(C) 2001-2007 Taku Kudo &lt;taku@chasen.org&gt;<br />
  * Copyright(C) 2009 MURAWAKI Yugo &lt;murawaki@nlp.kuee.kyoto-u.ac.jp&gt;
  * Copyright(C) 2012 KOMIYA Atsushi &lt;komiya.atsushi@gmail.com&gt;
  * </p>
- *
+ * <p>
  * <p>
  * The contents of this file may be used under the terms of either of the GNU
  * Lesser General Public License Version 2.1 or later (the "LGPL"), or the BSD
@@ -16,16 +16,8 @@
 
 package io.github.tankle.datastructs;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 public class DoubleArrayTrie {
     private final static int BUF_SIZE = 16384;
@@ -36,7 +28,7 @@ public class DoubleArrayTrie {
         int depth;
         int left;
         int right;
-    };
+    }
 
     private int check[];
     private int base[];
@@ -127,7 +119,8 @@ public class DoubleArrayTrie {
         if (allocSize <= pos)
             resize(pos + 1);
 
-        outer: while (true) {
+        outer:
+        while (true) {
             pos++;
 
             if (allocSize <= pos)
@@ -405,5 +398,55 @@ public class DoubleArrayTrie {
             System.err.println("i: " + i + " [" + base[i] + ", " + check[i]
                     + "]");
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader reader = new BufferedReader(new FileReader("E:\\Git\\Github\\NLPAlgorithm\\SpellCorrect\\src\\resources\\data\\small.dict"));
+        String line;
+        List<String> words = new ArrayList<String>();
+        Set<Character> charset = new HashSet<Character>();
+        while ((line = reader.readLine()) != null) {
+            words.add(line);
+            // 制作一份码表debug
+            for (char c : line.toCharArray()) {
+                charset.add(c);
+            }
+        }
+        reader.close();
+        // 这个字典如果要加入新词必须按字典序，参考下面的代码
+//        Collections.sort(words);
+//        BufferedWriter writer = new BufferedWriter(new FileWriter("./data/sorted.dic", false));
+//        for (String w : words)
+//        {
+//            writer.write(w);
+//            writer.newLine();
+//        }
+        System.out.println("字典词条：" + words.size());
+        Collections.sort(words);
+        for (String word : words) {
+            System.out.println(word);
+        }
+        {
+            String infoCharsetValue = "";
+            String infoCharsetCode = "";
+            for (Character c : charset) {
+                infoCharsetValue += c.charValue() + "    ";
+                infoCharsetCode += (int) c.charValue() + " ";
+            }
+            infoCharsetValue += '\n';
+            infoCharsetCode += '\n';
+            System.out.print(infoCharsetValue);
+            System.out.print(infoCharsetCode);
+        }
+
+        DoubleArrayTrie dat = new DoubleArrayTrie();
+        System.out.println("是否错误: " + dat.build(words));
+        System.out.println(dat);
+        List<Integer> integerList = dat.commonPrefixSearch("自然语言处理");
+        for (int index : integerList) {
+            System.out.println(words.get(index));
+        }
+
     }
 }
